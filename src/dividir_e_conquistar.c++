@@ -2,10 +2,13 @@
 #include <cmath>
 #include <algorithm>
 #include <cfloat>
+#include <future>
 
 using namespace std;
 
 #include "point.h"
+
+const int LIMIAR_THREAD = 5000;
 
 bool compararX(const Ponto& a, const Ponto& b) {
     return a.x < b.x;
@@ -16,7 +19,9 @@ bool compararY(const Ponto& a, const Ponto& b) {
 }
 
 double calcularDistancia(const Ponto& p1, const Ponto& p2) {
-    return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+    return sqrt((p1.x - p2.x) * (p1.x - p2.x) + 
+                (p1.y - p2.y) * (p1.y - p2.y) + 
+                (p1.z - p2.z) * (p1.z - p2.z));
 }
 
 // força bruta local para pequenos subconjuntos de sensores (n <= 3)
@@ -33,6 +38,11 @@ double forcaBrutaLocal(const vector<Ponto>& P, int inicio, int fim, Ponto& cp1, 
         }
     }
     return min_dist;
+}
+
+// exporta forca bruta para a main fazer benchmark
+double buscarForcaBruta(const vector<Ponto>& P, Ponto& cp1, Ponto& cp2) {
+    return forcaBrutaLocal(P, 0, P.size(), cp1, cp2);
 }
 
 // varredura linear na faixa de fronteira entre as duas sub-regiões
@@ -67,8 +77,15 @@ double executarDivisaoEConquista(const vector<Ponto>& Px, int inicio, int fim, P
 
     Ponto cp1_esq, cp2_esq, cp1_dir, cp2_dir;
 
-    double dl = executarDivisaoEConquista(Px, inicio, meio, cp1_esq, cp2_esq);
-    double dr = executarDivisaoEConquista(Px, meio + 1, fim, cp1_dir, cp2_dir);
+    double dl, dr;
+    if (fim - inicio > LIMIAR_THREAD) {
+        auto future_esq = async(launch::async, executarDivisaoEConquista, ref(Px), inicio, meio, ref(cp1_esq), ref(cp2_esq));
+        dr = executarDivisaoEConquista(Px, meio + 1, fim, cp1_dir, cp2_dir);
+        dl = future_esq.get();
+    } else {
+        dl = executarDivisaoEConquista(Px, inicio, meio, cp1_esq, cp2_esq);
+        dr = executarDivisaoEConquista(Px, meio + 1, fim, cp1_dir, cp2_dir);
+    }
 
     double d;
     if (dl < dr) {
