@@ -5,11 +5,7 @@
 
 using namespace std;
 
-// Estrutura que representa a localização geográfica de um sensor IoT
-struct Ponto {
-    int id; 
-    double x, y;
-};
+#include "point.h"
 
 bool compararX(const Ponto& a, const Ponto& b) {
     return a.x < b.x;
