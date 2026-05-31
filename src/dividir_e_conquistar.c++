@@ -59,3 +59,46 @@ double processarFaixaFronteira(vector<Ponto>& faixa, double d_min, Ponto& cp1, P
     }
     return min_dist;
 }
+
+// execucao recursiva do algoritmo principal
+double executarDivisaoEConquista(const vector<Ponto>& Px, int inicio, int fim, Ponto& cp1, Ponto& cp2) {
+    if (fim - inicio <= 3) {
+        return forcaBrutaLocal(Px, inicio, fim, cp1, cp2);
+    }
+
+    int meio = inicio + (fim - inicio) / 2;
+    Ponto pontoMedio = Px[meio];
+
+    Ponto cp1_esq, cp2_esq, cp1_dir, cp2_dir;
+
+    double dl = executarDivisaoEConquista(Px, inicio, meio, cp1_esq, cp2_esq);
+    double dr = executarDivisaoEConquista(Px, meio + 1, fim, cp1_dir, cp2_dir);
+
+    double d;
+    if (dl < dr) {
+        d = dl;
+        cp1 = cp1_esq;
+        cp2 = cp2_esq;
+    } else {
+        d = dr;
+        cp1 = cp1_dir;
+        cp2 = cp2_dir;
+    }
+
+    // varredura da interseccao central
+    vector<Ponto> faixa;
+    faixa.reserve(fim - inicio + 1); 
+    for (int i = inicio; i <= fim; i++) {
+        if (abs(Px[i].x - pontoMedio.x) < d) {
+            faixa.push_back(Px[i]);
+        }
+    }
+
+    return min(d, processarFaixaFronteira(faixa, d, cp1, cp2));
+}
+
+// ponto de entrada
+double buscarParMaisProximo(vector<Ponto>& P, Ponto& sensor1, Ponto& sensor2) {
+    sort(P.begin(), P.end(), compararX);
+    return executarDivisaoEConquista(P, 0, P.size() - 1, sensor1, sensor2);
+}
