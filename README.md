@@ -24,6 +24,41 @@ Na prática, a engine corta os pontos no meio, joga metades grandes em threads s
 
 ---
 
+## Como Executar
+
+O projeto foi projetado para rodar primariamente em ambientes Unix/Linux devido à utilização nativa da biblioteca de multi-threading (`-pthread`). 
+
+**Pré-requisitos Críticos:**
+A compilação do motor C++ exige que o pacote `g++` (GCC) e o `make` estejam disponíveis no seu sistema, juntamente com a dependência visual no Python. Se você estiver usando Windows, é **altamente recomendável** rodar o projeto através do **WSL** (Windows Subsystem for Linux) para evitar problemas de portabilidade com o compilador.
+
+### Passo a Passo no Linux / WSL (Recomendado)
+
+1. Abra o terminal na raiz do projeto e instale o compilador e a dependência do Python:
+```bash
+sudo apt update
+sudo apt install g++ make python3-matplotlib -y
+```
+
+2. Execute o orquestrador. Ele se encarregará de compilar o binário silenciosamente e invocar o benchmark:
+```bash
+python3 src/orquestrador.py
+```
+
+### Passo a Passo no Windows (Nativo)
+
+Se não for possível utilizar o WSL, você deverá configurar o ambiente Windows manualmente:
+1. Instale o [MinGW-w64](https://www.mingw-w64.org/) e certifique-se de adicionar a pasta `bin` nas Variáveis de Ambiente (`PATH`) do Windows para que o comando `g++` seja reconhecido.
+2. Instale o pacote gráfico via pip:
+```cmd
+pip install matplotlib
+```
+3. Execute o script via PowerShell ou CMD:
+```cmd
+python src/orquestrador.py
+```
+
+---
+
 ## Histórico de Versões
 | Versão | Descrição | Autor(es) | Data | Revisor(es) |
 |--------|-----------|-----------|------|-------------|

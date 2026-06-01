@@ -165,3 +165,7 @@ if __name__ == "__main__":
         
         if ultima_saida_valida:
             plotar_resultados_completos(ultimos_sensores, ultima_saida_valida, tempos_bf, tempos_dc, tamanhos_n)
+    else:
+        print("\n[ERRO CRÍTICO] Falha ao compilar o motor C++.")
+        print("Motivo provável: O compilador 'g++' ou 'make' não foi encontrado no seu sistema.")
+        print("Se você estiver no Windows, certifique-se de que o MinGW (GCC) está instalado e adicionado às Variáveis de Ambiente (PATH).")

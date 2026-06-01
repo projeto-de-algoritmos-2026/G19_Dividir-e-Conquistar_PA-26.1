@@ -1,0 +1,19 @@
+# Compilação C++
+*.o
+engine
+engine.exe
+
+# Cache Python e Ambientes Virtuais
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env/
+
+# IDE e SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
