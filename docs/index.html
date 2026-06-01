@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHM IoT — G19 | Dividir e Conquistar</title>
+    <meta name="description"
+        content="Monitoramento estrutural utilizando o algoritmo de par de pontos mais próximo para prever rupturas.">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <div class="highlight-bar"></div>
+
+    <nav>
+        <div class="nav-marca">
+            <span class="nav-marca-dot"></span>
+            G19 — Monitoramento Estrutural
+        </div>
+        <ul class="nav-links">
+            <li><a href="#sobre">Arquitetura</a></li>
+            <li><a href="#algoritmo">Processamento</a></li>
+            <li><a href="#live-demo">Live Demo</a></li>
+            <li><a href="#codigo">Módulos</a></li>
+            <li><a href="#instalacao">Ambiente</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-badge">IoT &middot; Dividir e Conquistar</div>
+        <h1>
+            Análise de Estresse e<br>
+            <span class="destaque">Previsão de Rupturas</span>
+        </h1>
+        <p class="hero-desc">
+            Simulação em tempo real de infraestruturas críticas. O pipeline identifica os dois sensores geometricamente
+            mais próximos com alta performance, permitindo mitigar falhas mecânicas catastróficas.
+        </p>
+        <div class="hero-acoes">
+            <a href="#live-demo" class="btn-primario">Acessar Live Demo</a>
+            <a href="#codigo" class="btn-secundario">Ver Código C++</a>
+        </div>
+    </div>
+
+    <section id="sobre">
+        <div class="secao-header">
+            <span class="secao-tag">Fundamentação</span>
+            <h2 class="secao-titulo">Arquitetura do Problema</h2>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card tema-sensor">
+                <div class="card-icone">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                        <path d="M12 6v6l4 2" />
+                    </svg>
+                </div>
+                <h3>Orquestração Dinâmica</h3>
+                <p>O sistema em Python simula o comportamento de sensores espaciais, controla o tempo de execução e cria modelos em 3D para mostrar onde a estrutura sofreu deformações.</p>
+            </div>
+            <div class="card tema-threads">
+                <div class="card-icone">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="9" />
+                        <rect x="14" y="3" width="7" height="5" />
+                        <rect x="14" y="12" width="7" height="9" />
+                        <rect x="3" y="16" width="7" height="5" />
+                    </svg>
+                </div>
+                <h3>Paralelismo Nativo</h3>
+                <p>O backend em C++ segmenta o espaço em sub-regiões e distribui o cálculo geométrico de forma assíncrona usando threads</p>
+            </div>
+            <div class="card tema-divide">
+                <div class="card-icone">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="5" r="3" />
+                        <circle cx="5" cy="19" r="3" />
+                        <circle cx="19" cy="19" r="3" />
+                        <line x1="12" y1="8" x2="5" y2="16" />
+                        <line x1="12" y1="8" x2="19" y2="16" />
+                    </svg>
+                </div>
+                <h3>Dividir e Conquistar</h3>
+                <p>Ordenação por coordenadas e varredura recursiva de par mais próximo reduzem a complexidade de O(n²) para O(n log n).</p>
+            </div>
+            <div class="card tema-bench">
+                <div class="card-icone">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10" />
+                        <line x1="12" y1="20" x2="12" y2="4" />
+                        <line x1="6" y1="20" x2="6" y2="14" />
+                    </svg>
+                </div>
+                <h3>Análise Comparativa</h3>
+                <p>Comparação de desempenho entre força bruta e dividir e conquistar.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="algoritmo">
+        <div class="secao-header">
+            <span class="secao-tag">Processamento</span>
+            <h2 class="secao-titulo">Pipeline do Sistema</h2>
+            <p class="secao-desc">
+                Etapas lógicas utilizadas pelo backend para mapear e analisar áreas de tensão.
+            </p>
+        </div>
+
+        <div class="algoritmo-passos">
+            <div class="passo">
+                <div class="passo-numero num-sensor">01</div>
+                <div class="passo-corpo">
+                    <h3>Ingestão Cartesiana</h3>
+                    <p>O orquestrador gera as coordenadas 3D de telemetria dos sensores e injeta via stream otimizado diretamente na memória compartilhada do motor nativo.</p>
+                </div>
+            </div>
+            <div class="passo">
+                <div class="passo-numero num-threads">02</div>
+                <div class="passo-corpo">
+                    <h3>Ordenação por Eixo</h3>
+                    <p>O algoritmo realiza um pré-processamento ordenando todos os pontos com base na coordenada X para permitir a divisão espacial exata pelo plano mediano.</p>
+                </div>
+            </div>
+            <div class="passo">
+                <div class="passo-numero num-divide">03</div>
+                <div class="passo-corpo">
+                    <h3>Divisão Recursiva (Sub-problemas)</h3>
+                    <p>O espaço é dividido ao meio. Metades independentes são delegadas para processamento assíncrono em threads paralelas que calculam recursivamente a distância mínima interna de cada lado.</p>
+                </div>
+            </div>
+            <div class="passo">
+                <div class="passo-numero num-bench">04</div>
+                <div class="passo-corpo">
+                    <h3>Varredura de Fronteira (Strip)</h3>
+                    <p>O algoritmo cria uma faixa vertical de largura 2δ ao redor da linha de divisão. Os pontos contidos nessa faixa são ordenados pelo eixo Y, comparando apenas os vizinhos necessários.</p>
+                </div>
+            </div>
+            <div class="passo">
+                <div class="passo-numero num-sensor">05</div>
+                <div class="passo-corpo">
+                    <h3>Retorno</h3>
+                    <p>Consolida o menor valor absoluto encontrado entre as metades e a faixa de fronteira, retornando os IDs dos dois sensores críticos para o plot geométrico final.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="codigo">
+        <div class="secao-header">
+            <span class="secao-tag">Código-fonte</span>
+            <h2 class="secao-titulo">Módulos Estruturais</h2>
+            <p class="secao-desc">
+                Núcleo algorítmico distribuído de baixo nível projetado para computação massiva sem overhead de runtime.
+            </p>
+        </div>
+
+        <div>
+            <div class="tabs">
+                <button class="tab ativo" data-tab="motor">motor.cpp</button>
+                <button class="tab" data-tab="point">point.h</button>
+                <button class="tab" data-tab="orquestrador">orquestrador.py</button>
+            </div>
+
+            <div class="tab-conteudo ativo" data-tab="motor">
+                <div class="bloco-codigo">
+                    <div class="bloco-codigo-header">
+                        <span class="bloco-codigo-nome">src/motor.cpp</span>
+                        <span class="bloco-codigo-lang">C++17</span>
+                    </div>
+                    <pre><code><span class="keyword">#include</span> <span class="string">"point.h"</span>
+<span class="keyword">#include</span> <span class="string">&lt;algorithm&gt;</span>
+<span class="keyword">#include</span> <span class="string">&lt;cmath&gt;</span>
+<span class="keyword">#include</span> <span class="string">&lt;future&gt;</span>
+
+<span class="builtin">double</span> <span class="fn-name">distancia</span>(<span class="keyword">const</span> Point& p1, <span class="keyword">const</span> Point& p2) {
+    <span class="keyword">return</span> std::<span class="fn-name">sqrt</span>((p1.x - p2.x)*2 + (p1.y - p2.y)*2 + (p1.z - p2.z)*2);
+}
+
+std::pair&lt;Point, Point&gt; <span class="fn-name">parMaisProximoRecursivo</span>(std::vector&lt;Point&gt;& Px, std::vector&lt;Point&gt;& Py) {
+    <span class="keyword">if</span> (Px.<span class="builtin">size</span>() &lt;= <span class="builtin">3</span>) <span class="keyword">return</span> <span class="fn-name">forcaBruta</span>(Px);
+
+    <span class="builtin">int</span> meio = Px.<span class="builtin">size</span>() / <span class="builtin">2</span>;
+    Point pontoMedio = Px[meio];
+
+    std::vector&lt;Point&gt; PxEsq(Px.<span class="builtin">begin</span>(), Px.<span class="builtin">begin</span>() + meio);
+    std::vector&lt;Point&gt; PxDir(Px.<span class="builtin">begin</span>() + meio, Px.<span class="builtin">end</span>());
+
+    <span class="comment">// Divisão em Threads Assíncronas</span>
+    <span class="keyword">auto</span> f_esq = std::<span class="builtin">async</span>(std::launch::async, parMaisProximoRecursivo, std::<span class="builtin">ref</span>(PxEsq), std::<span class="builtin">ref</span>(Py));
+    <span class="keyword">auto</span> par_dir = <span class="fn-name">parMaisProximoRecursivo</span>(PxDir, Py);
+    <span class="keyword">auto</span> par_esq = f_esq.<span class="builtin">get</span>();
+
+    <span class="keyword">auto</span> resultado = (distancia(par_esq.first, par_esq.second) &lt; distancia(par_dir.first, par_dir.second)) ? par_esq : par_dir;
+    <span class="keyword">return</span> <span class="fn-name">checarFaixaFronteira</span>(Py, pontoMedio, resultado);
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="tab-conteudo" data-tab="point">
+                <div class="bloco-codigo">
+                    <div class="bloco-codigo-header">
+                        <span class="bloco-codigo-nome">src/point.h</span>
+                        <span class="bloco-codigo-lang">C++</span>
+                    </div>
+                    <pre><code><span class="keyword">#ifndef</span> POINT_H
+<span class="keyword">#define</span> POINT_H
+
+<span class="keyword">struct</span> <span class="fn-name">Point</span> {
+    <span class="builtin">int</span> id;
+    <span class="builtin">double</span> x;
+    <span class="builtin">double</span> y;
+    <span class="builtin">double</span> z;
+};
+
+<span class="keyword">inline</span> <span class="builtin">bool</span> <span class="fn-name">compararX</span>(<span class="keyword">const</span> Point& a, <span class="keyword">const</span> Point& b) { <span class="keyword">return</span> a.x &lt; b.x; }
+<span class="keyword">inline</span> <span class="builtin">bool</span> <span class="fn-name">compararY</span>(<span class="keyword">const</span> Point& a, <span class="keyword">const</span> Point& b) { <span class="keyword">return</span> a.y &lt; b.y; }
+
+<span class="keyword">#endif</span></code></pre>
+                </div>
+            </div>
+
+            <div class="tab-conteudo" data-tab="orquestrador">
+                <div class="bloco-codigo">
+                    <div class="bloco-codigo-header">
+                        <span class="bloco-codigo-nome">src/orquestrador.py</span>
+                        <span class="bloco-codigo-lang">Python</span>
+                    </div>
+                    <pre><code><span class="keyword">import</span> subprocess
+<span class="keyword">import</span> random
+
+<span class="keyword">def</span> <span class="fn-name">executar_benchmark_iot</span>(<span class="param">num_sensores</span>):
+    <span class="comment"># Geração estocástica de coordenadas espaciais 3D</span>
+    coordenadas = []
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="builtin">range</span>(num_sensores):
+        x = random.<span class="fn-name">uniform</span>(<span class="builtin">0.0</span>, <span class="builtin">1000.0</span>)
+        y = random.<span class="fn-name">uniform</span>(<span class="builtin">0.0</span>, <span class="builtin">1000.0</span>)
+        z = random.<span class="fn-name">uniform</span>(<span class="builtin">0.0</span>, <span class="builtin">500.0</span>)
+        coordenadas.<span class="fn-name">append</span>(f<span class="string">"{i} {x} {y} {z}"</span>)
+        
+    <span class="comment"># Chamada IPC via subprocess enviando os dados para a Engine C++</span>
+    processo = subprocess.<span class="fn-name">Popen</span>([<span class="string">'./motor'</span>], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=<span class="builtin">True</span>)
+    saida, _ = processo.<span class="fn-name">communicate</span>(input=<span class="string">"\n"</span>.<span class="builtin">join</span>(coordenadas))
+    
+    <span class="keyword">return</span> saida</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="instalacao">
+        <div class="secao-header">
+            <span class="secao-tag">Implantação</span>
+            <h2 class="secao-titulo">Ambiente Operacional</h2>
+            <p class="secao-desc">
+                Procedimento padrão de compilação nativa e gerenciamento do ciclo de testes.
+            </p>
+        </div>
+
+        <div class="instalacao-bloco">
+            <div class="instalacao-passo">
+                <div class="instalacao-num">1</div>
+                <div>
+                    <h4>Clonagem do Sistema</h4>
+                    <p>Baixe os arquivos do repositório contendo o código fonte misto da arquitetura.</p>
+                    <div class="cmd"
+                        data-cmd="git clone https://github.com/projeto-de-algoritmos-2026/G19_Dividir-e-conquistar_PA-26.1.git">
+                        git clone https://github.com/projeto-de-algoritmos-2026/G19_Dividir-e-conquistar_PA-26.1.git
+                    </div>
+                </div>
+            </div>
+            <div class="instalacao-passo">
+                <div class="instalacao-num">2</div>
+                <div>
+                    <h4>Instalação de Dependências de Sistema (Linux / WSL)</h4>
+                    <p>Carregue os gerenciadores de compilação GCC nativos para ativar o suporte a Multi-threading.</p>
+                    <div class="cmd" data-cmd="sudo apt update && sudo apt install g++ make python3-matplotlib -y">
+                        sudo apt update && sudo apt install g++ make python3-matplotlib -y
+                    </div>
+                </div>
+            </div>
+            <div class="instalacao-passo">
+                <div class="instalacao-num">3</div>
+                <div>
+                    <h4>Execução do Orquestrador de Redes</h4>
+                    <p>Rode o script mestre. O Makefile interno será acionado silenciosamente antes da análise.</p>
+                    <div class="cmd" data-cmd="python3 src/orquestrador.py">
+                        python3 src/orquestrador.py
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Grupo 19 &middot; SHM IoT — Monitoramento Estrutural &middot; Universidade de Brasília</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
