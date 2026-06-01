@@ -2,19 +2,8 @@
 #include <cmath>
 #include <algorithm>
 #include <cfloat>
-#include <future>
 
 #include "point.h"
-
-const int LIMIAR_THREAD = 5000;
-
-bool compararX(const Ponto& a, const Ponto& b) {
-    return a.x < b.x;
-}
-
-bool compararY(const Ponto& a, const Ponto& b) {
-    return a.y < b.y;
-}
 
 double calcularDistancia(const Ponto& p1, const Ponto& p2) {
     return std::sqrt((p1.x - p2.x) * (p1.x - p2.x) + 
@@ -22,8 +11,35 @@ double calcularDistancia(const Ponto& p1, const Ponto& p2) {
                      (p1.z - p2.z) * (p1.z - p2.z));
 }
 
-// força bruta local para pequenos subconjuntos de sensores (n <= 3)
-double forcaBrutaLocal(const std::vector<Ponto>& P, int inicio, int fim, Ponto& cp1, Ponto& cp2) {
+void merge(std::vector<Ponto>& P, int inicio, int meio, int fim, char eixo) {
+    std::vector<Ponto> temp(fim - inicio + 1);
+    int i = inicio, j = meio + 1, k = 0;
+
+    while (i <= meio && j <= fim) {
+        bool menorOuIgual = (eixo == 'x') ? (P[i].x <= P[j].x) : (P[i].y <= P[j].y);
+        
+        if (menorOuIgual) temp[k++] = P[i++];
+        else temp[k++] = P[j++];
+    }
+    while (i <= meio) temp[k++] = P[i++];
+    while (j <= fim) temp[k++] = P[j++];
+
+    for (i = inicio, k = 0; i <= fim; ++i, ++k) {
+        P[i] = temp[k];
+    }
+}
+
+void mergeSort(std::vector<Ponto>& P, int inicio, int fim, char eixo) {
+    if (inicio >= fim) return;
+    
+    int meio = inicio + (fim - inicio) / 2;
+    mergeSort(P, inicio, meio, eixo);
+    mergeSort(P, meio + 1, fim, eixo);
+    merge(P, inicio, meio, fim, eixo);
+}
+
+// força bruta local para pequenos subconjuntos (n <= 3)
+double forcaBrutaLocal(std::vector<Ponto>& P, int inicio, int fim, Ponto& cp1, Ponto& cp2) {
     double min_dist = DBL_MAX;
     for (int i = inicio; i < fim; ++i) {
         for (int j = i + 1; j <= fim; ++j) {
@@ -35,83 +51,69 @@ double forcaBrutaLocal(const std::vector<Ponto>& P, int inicio, int fim, Ponto& 
             }
         }
     }
+    mergeSort(P, inicio, fim, 'y');
     return min_dist;
 }
 
-// exporta forca bruta para a main fazer benchmark
 double buscarForcaBruta(const std::vector<Ponto>& P, Ponto& cp1, Ponto& cp2) {
-    return forcaBrutaLocal(P, 0, P.size(), cp1, cp2);
+    if (P.empty()) return DBL_MAX;
+    std::vector<Ponto> copia_P = P;
+    return forcaBrutaLocal(copia_P, 0, copia_P.size() - 1, cp1, cp2);
 }
 
-// varredura linear na faixa de fronteira entre as duas sub-regiões
-double processarFaixaFronteira(std::vector<Ponto>& faixa, double d_min, Ponto& cp1, Ponto& cp2) {
-    double min_dist = d_min;
-
-    // Ordena os sensores da faixa verticalmente pelo eixo Y 
-    std::sort(faixa.begin(), faixa.end(), compararY);
-
-    // loop limitado a no máximo 7 comparações por elemento 
-    for (size_t i = 0; i < faixa.size(); ++i) {
-        for (size_t j = i + 1; j < faixa.size() && (faixa[j].y - faixa[i].y) < min_dist; ++j) {
-            if (std::abs(faixa[i].z - faixa[j].z) >= min_dist) continue;
-
-            double d = calcularDistancia(faixa[i], faixa[j]);
-            if (d < min_dist) {
-                min_dist = d;
-                cp1 = faixa[i];
-                cp2 = faixa[j];
-            }
-        }
-    }
-    return min_dist;
-}
-
-// execucao recursiva do algoritmo principal
-double executarDivisaoEConquista(const std::vector<Ponto>& Px, int inicio, int fim, Ponto& cp1, Ponto& cp2) {
+double executarDivisaoEConquista(std::vector<Ponto>& P, int inicio, int fim, Ponto& cp1, Ponto& cp2) {
     if (fim - inicio <= 3) {
-        return forcaBrutaLocal(Px, inicio, fim, cp1, cp2);
+        return forcaBrutaLocal(P, inicio, fim, cp1, cp2);
     }
 
     int meio = inicio + (fim - inicio) / 2;
-    Ponto pontoMedio = Px[meio];
-
+    Ponto pontoMedio = P[meio]; 
     Ponto cp1_esq, cp2_esq, cp1_dir, cp2_dir;
+    double res_esq = executarDivisaoEConquista(P, inicio, meio, cp1_esq, cp2_esq);
+    double res_dir = executarDivisaoEConquista(P, meio + 1, fim, cp1_dir, cp2_dir);
+    double min_atual;
 
-    double dl, dr;
-    if (fim - inicio > LIMIAR_THREAD) {
-        auto future_esq = std::async(std::launch::async, executarDivisaoEConquista, std::ref(Px), inicio, meio, std::ref(cp1_esq), std::ref(cp2_esq));
-        dr = executarDivisaoEConquista(Px, meio + 1, fim, cp1_dir, cp2_dir);
-        dl = future_esq.get();
-    } else {
-        dl = executarDivisaoEConquista(Px, inicio, meio, cp1_esq, cp2_esq);
-        dr = executarDivisaoEConquista(Px, meio + 1, fim, cp1_dir, cp2_dir);
-    }
-
-    double d;
-    if (dl < dr) {
-        d = dl;
+    if (res_esq < res_dir) {
+        min_atual = res_esq;
         cp1 = cp1_esq;
         cp2 = cp2_esq;
     } else {
-        d = dr;
+        min_atual = res_dir;
         cp1 = cp1_dir;
         cp2 = cp2_dir;
     }
 
-    // varredura da interseccao central
+    merge(P, inicio, meio, fim, 'y');
+
+    // strip que delimita X
     std::vector<Ponto> faixa;
     faixa.reserve(fim - inicio + 1); 
     for (int i = inicio; i <= fim; i++) {
-        if (std::abs(Px[i].x - pontoMedio.x) < d) {
-            faixa.push_back(Px[i]);
+        if (std::abs(P[i].x - pontoMedio.x) < min_atual) {
+            faixa.push_back(P[i]);
         }
     }
 
-    return std::min(d, processarFaixaFronteira(faixa, d, cp1, cp2));
+    // strip que delimita Y e Z
+    for (size_t i = 0; i < faixa.size(); ++i) {
+        for (size_t j = i + 1; j < faixa.size() && (faixa[j].y - faixa[i].y) < min_atual; ++j) {
+            if (std::abs(faixa[i].z - faixa[j].z) >= min_atual) continue;
+
+            double d = calcularDistancia(faixa[i], faixa[j]);
+            if (d < min_atual) {
+                min_atual = d;
+                cp1 = faixa[i]; 
+                cp2 = faixa[j]; 
+            }
+        }
+    }
+
+    return min_atual;
 }
 
-// ponto de entrada
 double buscarParMaisProximo(std::vector<Ponto>& P, Ponto& sensor1, Ponto& sensor2) {
-    std::sort(P.begin(), P.end(), compararX);
+    if (P.size() < 2) return DBL_MAX;
+
+    mergeSort(P, 0, P.size() - 1, 'x');
     return executarDivisaoEConquista(P, 0, P.size() - 1, sensor1, sensor2);
 }
