@@ -61,7 +61,6 @@ def invocar_motor_binario(dados_entrada):
     exec_path = os.path.join(os.path.dirname(__file__), bin_name)
     
     if not os.path.exists(exec_path):
-        # Fallback de busca no formato Unix se rodar como .exe falhar
         if sys.platform != "win32" and os.path.exists(os.path.join(os.path.dirname(__file__), "engine")):
             exec_path = os.path.join(os.path.dirname(__file__), "engine")
         else:
@@ -106,30 +105,59 @@ def plotar_resultados_completos(sensores, res, tempos_bf, tempos_dc, ns):
     if not VISUALIZACAO:
         return
         
-    fig = plt.figure(figsize=(16, 7))
-    
-    ax1 = fig.add_subplot(121, projection='3d')
+    fig = plt.figure(figsize=(20, 6))
+    ax1 = fig.add_subplot(131, projection='3d')
     xs = [s[1] for s in sensores]
     ys = [s[2] for s in sensores]
     zs = [s[3] for s in sensores]
     
-    ax1.scatter(xs, zs, ys, c='blue', s=5, alpha=0.3, label='Sensores IoT')
+    ax1.scatter(xs, zs, ys, c='blue', s=2, alpha=0.1)
     
     if "p1" in res and "p2" in res:
         p1, p2 = res["p1"], res["p2"]
-        ax1.scatter([p1[0], p2[0]], [p1[2], p2[2]], [p1[1], p2[1]], color='red', s=50, label='Par Crítico', zorder=5)
-        ax1.plot([p1[0], p2[0]], [p1[2], p2[2]], [p1[1], p2[1]], color='red', linestyle='--', linewidth=2)
-        ax1.set_title(f"Barragem 3D (Zonas de Estresse Gaussiano)\nDistância: {res['distancia']:.4f}m")
+        ax1.scatter([p1[0], p2[0]], [p1[2], p2[2]], [p1[1], p2[1]], color='red', s=5, zorder=10)
+        
+        ax1.set_title(f"Barragem 3D (Visão Macro)\nDistância Mínima: {res['distancia']:.4f}m")
         
     ax1.set_xlabel("X (m)")
     ax1.set_ylabel("Z (m)")
     ax1.set_zlabel("Y (m)")
-    ax1.legend()
+    import matplotlib.lines as mlines
+    leg_iot = mlines.Line2D([], [], color='blue', marker='o', linestyle='None', markersize=5, label='Sensores IoT')
+    leg_crit = mlines.Line2D([], [], color='red', marker='o', linestyle='None', markersize=5, label='Par Crítico')
+    ax1.legend(handles=[leg_iot, leg_crit])
     
-    ax2 = fig.add_subplot(122)
+    ax_zoom = fig.add_subplot(132, projection='3d')
+    if "p1" in res and "p2" in res:
+        p1, p2 = res["p1"], res["p2"]
+        raio = 1.0
+        vizinhos_x, vizinhos_y, vizinhos_z = [], [], []
+        for s in sensores:
+            if abs(s[1] - p1[0]) < raio and abs(s[2] - p1[1]) < raio and abs(s[3] - p1[2]) < raio:
+                vizinhos_x.append(s[1])
+                vizinhos_y.append(s[2])
+                vizinhos_z.append(s[3])
+                
+        ax_zoom.scatter(vizinhos_x, vizinhos_z, vizinhos_y, c='blue', s=15, alpha=0.4, label='Sensores Vizinhos')
+        ax_zoom.scatter([p1[0], p2[0]], [p1[2], p2[2]], [p1[1], p2[1]], color='red', s=15, zorder=10, label='Par Crítico')
+        ax_zoom.plot([p1[0], p2[0]], [p1[2], p2[2]], [p1[1], p2[1]], color='red', linestyle='-', linewidth=1, zorder=10)
+        ax_zoom.legend()
+        ax_zoom.set_box_aspect((1, 1, 1))
+        
+        ax_zoom.set_xlim(p1[0] - raio/2, p1[0] + raio/2)
+        ax_zoom.set_ylim(p1[2] - raio/2, p1[2] + raio/2)
+        ax_zoom.set_zlim(p1[1] - raio/2, p1[1] + raio/2)
+        
+        ax_zoom.set_title(f"Visão Micro (Raio de {raio}m)\nFissura Eminente Detectada")
+        ax_zoom.set_xlabel("X (m)")
+        ax_zoom.set_ylabel("Z (m)")
+        ax_zoom.set_zlabel("Y (m)")
+    
+    # 3. BENCHMARK DE COMPLEXIDADE
+    ax2 = fig.add_subplot(133)
     ax2.plot(ns, tempos_bf, marker='o', color='red', label='Força Bruta O(n²)', linewidth=2)
     ax2.plot(ns, tempos_dc, marker='s', color='green', label='Dividir e Conquistar O(n log n)', linewidth=2)
-    ax2.set_title("Benchmark de Complexidade C++ (O3)")
+    ax2.set_title("Benchmark de Complexidade")
     ax2.set_xlabel("Número de Sensores (N)")
     ax2.set_ylabel("Tempo de Execução (ms)")
     ax2.grid(True, linestyle='--', alpha=0.7)
