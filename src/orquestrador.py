@@ -1,6 +1,7 @@
 import random
 import subprocess
 import os
+import sys
 
 try:
     import matplotlib.pyplot as plt
@@ -9,13 +10,20 @@ except ImportError:
     VISUALIZACAO = False
 
 def compilar_motor_cpp():
-    comando = ["g++", "-std=c++17", "-O3", "-ffast-math", "-march=native", "-Wall", 
-               "-o", "engine.exe", "main.cpp", "dividir_e_conquistar.c++"]
+    try:
+        resultado = subprocess.run(["make"], capture_output=True, text=True, cwd=os.path.dirname(__file__))
+        if resultado.returncode == 0:
+            return True
+    except FileNotFoundError:
+        pass
+    
+    # caso seja windows, rodar sem precisar do make
+    bin_name = "engine.exe" if sys.platform == "win32" else "engine"
+    comando = ["g++", "-std=c++17", "-O3", "-ffast-math", "-march=native", "-Wall", "-pthread",
+               "-o", bin_name, "main.cpp", "dividir_e_conquistar.cpp"]
     try:
         resultado = subprocess.run(comando, capture_output=True, text=True, cwd=os.path.dirname(__file__))
-        if resultado.returncode != 0:
-            return False
-        return True
+        return resultado.returncode == 0
     except FileNotFoundError:
         return False
 
@@ -49,9 +57,15 @@ def formatar_entrada_cpp(sensores):
     return "\n".join(linhas) + "\n"
 
 def invocar_motor_binario(dados_entrada):
-    exec_path = os.path.join(os.path.dirname(__file__), "engine.exe")
+    bin_name = "engine.exe" if sys.platform == "win32" else "engine"
+    exec_path = os.path.join(os.path.dirname(__file__), bin_name)
+    
     if not os.path.exists(exec_path):
-        return None
+        # Fallback de busca no formato Unix se rodar como .exe falhar
+        if sys.platform != "win32" and os.path.exists(os.path.join(os.path.dirname(__file__), "engine")):
+            exec_path = os.path.join(os.path.dirname(__file__), "engine")
+        else:
+            return None
     try:
         proc = subprocess.run([exec_path], input=dados_entrada.encode('utf-8'), capture_output=True)
         saida = proc.stdout.decode('utf-8')
@@ -136,6 +150,7 @@ if __name__ == "__main__":
     
     if compilar_motor_cpp():
         for n in tamanhos_n:
+            print(f"Testando N={n}...")
             sensores_teste = gerar_sensores_mock(n)
             dados_stdin = formatar_entrada_cpp(sensores_teste)
             
