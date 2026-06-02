@@ -31,13 +31,13 @@ Fazer essa busca comparando cada sensor com todos os outros (Força Bruta) gera 
 
 ## Screenshots
 
-![Visão Macro da Estrutura]()
+![Visão Macro da Estrutura](/asstes/macro.png)
 
 Ao executar o programa, o orquestrador exibe inicialmente a visualização macro tridimensional da barragem contendo todos os sensores IoT plotados no espaço.
 
 Os pontos azuis representam a telemetria estocástica gerada e as áreas concentradas simulam as fissuras gaussianas de estresse mecânico.
 
-![Visão Micro da Fissura]()
+![Visão Micro da Fissura](/asstes/micro.png)
 
 Em seguida, o sistema isola a região em zoom na "Visão Micro".
 
@@ -45,7 +45,7 @@ Nessa etapa, o gráfico foca em um raio delimitado ao redor das coordenadas crí
 
 O par de sensores geometricamente mais próximo é destacado em vermelho com uma linha tracejada, evidenciando o ponto exato de estresse eminente.
 
-![Interface de Benchmark]()
+![Interface de Benchmark](/asstes/benchmark.png)
 
 A interface final apresenta o gráfico de benchmark de complexidade computacional, contrastando o tempo de execução em milissegundos da Força Bruta O(n²) contra o Dividir e Conquistar O(n log n) para diferentes volumes de dados (N).
 
