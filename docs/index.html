@@ -61,19 +61,7 @@
                 <h3>Orquestração Dinâmica</h3>
                 <p>O sistema em Python simula o comportamento de sensores espaciais, controla o tempo de execução e cria modelos em 3D para mostrar onde a estrutura sofreu deformações.</p>
             </div>
-            <div class="card tema-threads">
-                <div class="card-icone">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="9" />
-                        <rect x="14" y="3" width="7" height="5" />
-                        <rect x="14" y="12" width="7" height="9" />
-                        <rect x="3" y="16" width="7" height="5" />
-                    </svg>
-                </div>
-                <h3>Paralelismo Nativo</h3>
-                <p>O backend em C++ segmenta o espaço em sub-regiões e distribui o cálculo geométrico de forma assíncrona usando threads</p>
-            </div>
+            <!-- Card de Threads removido conforme decisão da equipe (execução síncrona) -->
             <div class="card tema-divide">
                 <div class="card-icone">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -131,7 +119,7 @@
                 <div class="passo-numero num-divide">03</div>
                 <div class="passo-corpo">
                     <h3>Divisão Recursiva (Sub-problemas)</h3>
-                    <p>O espaço é dividido ao meio. Metades independentes são delegadas para processamento assíncrono em threads paralelas que calculam recursivamente a distância mínima interna de cada lado.</p>
+                    <p>O espaço é dividido ao meio. Metades independentes são delegadas para processamento recursivo sequencial otimizado que calcula a distância mínima interna de cada lado.</p>
                 </div>
             </div>
             <div class="passo">
@@ -176,7 +164,6 @@
                     <pre><code><span class="keyword">#include</span> <span class="string">"point.h"</span>
 <span class="keyword">#include</span> <span class="string">&lt;algorithm&gt;</span>
 <span class="keyword">#include</span> <span class="string">&lt;cmath&gt;</span>
-<span class="keyword">#include</span> <span class="string">&lt;future&gt;</span>
 
 <span class="builtin">double</span> <span class="fn-name">distancia</span>(<span class="keyword">const</span> Point& p1, <span class="keyword">const</span> Point& p2) {
     <span class="keyword">return</span> std::<span class="fn-name">sqrt</span>((p1.x - p2.x)*2 + (p1.y - p2.y)*2 + (p1.z - p2.z)*2);
@@ -191,10 +178,9 @@ std::pair&lt;Point, Point&gt; <span class="fn-name">parMaisProximoRecursivo</spa
     std::vector&lt;Point&gt; PxEsq(Px.<span class="builtin">begin</span>(), Px.<span class="builtin">begin</span>() + meio);
     std::vector&lt;Point&gt; PxDir(Px.<span class="builtin">begin</span>() + meio, Px.<span class="builtin">end</span>());
 
-    <span class="comment">// Divisão em Threads Assíncronas</span>
-    <span class="keyword">auto</span> f_esq = std::<span class="builtin">async</span>(std::launch::async, parMaisProximoRecursivo, std::<span class="builtin">ref</span>(PxEsq), std::<span class="builtin">ref</span>(Py));
+    <span class="comment">// Divisão e Conquista Recursiva Padrão</span>
+    <span class="keyword">auto</span> par_esq = <span class="fn-name">parMaisProximoRecursivo</span>(PxEsq, Py);
     <span class="keyword">auto</span> par_dir = <span class="fn-name">parMaisProximoRecursivo</span>(PxDir, Py);
-    <span class="keyword">auto</span> par_esq = f_esq.<span class="builtin">get</span>();
 
     <span class="keyword">auto</span> resultado = (distancia(par_esq.first, par_esq.second) &lt; distancia(par_dir.first, par_dir.second)) ? par_esq : par_dir;
     <span class="keyword">return</span> <span class="fn-name">checarFaixaFronteira</span>(Py, pontoMedio, resultado);
@@ -278,7 +264,7 @@ std::pair&lt;Point, Point&gt; <span class="fn-name">parMaisProximoRecursivo</spa
                 <div class="instalacao-num">2</div>
                 <div>
                     <h4>Instalação de Dependências de Sistema (Linux / WSL)</h4>
-                    <p>Carregue os gerenciadores de compilação GCC nativos para ativar o suporte a Multi-threading.</p>
+                    <p>Carregue os gerenciadores de compilação GCC nativos para compilar o motor geométrico C++.</p>
                     <div class="cmd" data-cmd="sudo apt update && sudo apt install g++ make python3-matplotlib -y">
                         sudo apt update && sudo apt install g++ make python3-matplotlib -y
                     </div>
@@ -301,7 +287,7 @@ std::pair&lt;Point, Point&gt; <span class="fn-name">parMaisProximoRecursivo</spa
         <p>Grupo 19 &middot; SHM IoT — Monitoramento Estrutural &middot; Universidade de Brasília</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="js/app.js"></script>
 </body>
 
 </html>
