@@ -27,7 +27,7 @@ Fazer essa busca comparando cada sensor com todos os outros (Força Bruta) gera 
 
 ## Vídeo
 
-[Link Vídeo]()
+[Link Vídeo](https://www.youtube.com/watch?v=niJhCwrzUZk)
 
 ## Screenshots
 
