@@ -16,10 +16,14 @@ Conteúdo da Disciplina: Dividir e Conquistar
 
 ## Sobre
 
-O projeto consiste no monitoramento em tempo real de infraestruturas críticas, como pontes ou barragens, identificando rapidamente quais são os dois sensores que apresentam zonas de estresse mais próximas geograficamente para prever rupturas mecânicas catastróficas.
-Nesse modelo, cada nó tridimensional representa um sensor de telemetria IoT com coordenadas (X, Y, Z) instalados ao longo da estrutura de concreto.
-A partir dessa nuvem de dados massiva, o algoritmo de Dividir e Conquistar é aplicado para quebrar a complexidade de tempo de loops aninhados tradicionais de O(n²) para O(n log n), dividindo o espaço tridimensional de forma geométrica através de um plano mediano.
-Ao segmentar o espaço em sub-regiões menores e delegar o cálculo de forma assíncrona, o motor consegue filtrar e analisar com alta eficiência a faixa de fronteira (strip), calculando o par crítico de estresse iminente. O sistema também implementa a Força Bruta isolada, que serve como caso base para subproblemas pequenos e como base comparativa empírica para gerar curvas reais de benchmark de desempenho.
+O projeto faz o monitoramento em tempo real de estruturas como pontes e barragens usando o algoritmo do **Par de Pontos Mais Próximos**. A ideia é rodar essa análise geométrica para flagrar o ponto exato de maior estresse físico e prever rupturas na estrutura antes que aconteça um desastre.
+
+### Mapeamento dos Sensores no plano 3D
+O sistema recebe dados onde cada sensor IoT instalado no concreto vira um ponto com coordenadas (X, Y, Z). O objetivo do algoritmo é varrer esses pontos e encontrar quais são os dois sensores que estão mais próximos um do outro, já que a aproximação deles indica uma deformação ou compressão crítica na estrutura.
+
+### Divisão Espacial e Ganho de Desempenho
+Fazer essa busca comparando cada sensor com todos os outros (Força Bruta) gera um custo de $O(n²)$, o que trava o sistema se tivermos milhares de sensores rodando ao mesmo tempo.  Para resolver isso, foi aplicado um algoritmo de **Dividir e Conquistar** para derrubar o tempo de execução para $O(n \log n)$.
+
 
 ## Vídeo
 
